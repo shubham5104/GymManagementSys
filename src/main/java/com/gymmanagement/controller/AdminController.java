@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import jakarta.servlet.http.HttpSession;
+
 import com.gymmanagement.entity.Admin;
 import com.gymmanagement.entity.Plan;
 import com.gymmanagement.entity.Users;
@@ -25,6 +27,7 @@ public class AdminController {
 
     @Autowired
     private PlanService planService;
+
     @GetMapping("/login")
     public String showAdminLoginPage() {
         return "Admin-login";
@@ -36,7 +39,7 @@ public class AdminController {
         
         if (admin != null) {
             session.setAttribute("loggedInAdmin", admin);
-            return "redirect:/admin/dashboard"; // Redirect to dashboard
+            return "redirect:/admin/dashboard";
         }
 
         model.addAttribute("message", "Invalid email or password!");
@@ -51,16 +54,14 @@ public class AdminController {
 
     @GetMapping("/dashboard")
     public String showAdminDashboard(HttpSession session, Model model) {
-        Admin admin = (Admin) session.getAttribute("loggedInAdmin");
-        if (admin == null) {
+        if (session.getAttribute("loggedInAdmin") == null) {
             return "redirect:/admin/login";
         }
- 
-        List<Plan> plans = planService.getAllPlans();
-        model.addAttribute("admin", admin);
-        model.addAttribute("plans", plans); // Add this line
 
-        return "Admin-dashboard"; // Load dashboard page
+        List<Plan> plans = planService.getAllPlans();
+        model.addAttribute("plans", plans);
+
+        return "Admin-dashboard";
     }
 
     @PostMapping("/register")
@@ -69,11 +70,11 @@ public class AdminController {
          
         if (adminService.registerAdmin(admin) == null) {
             model.addAttribute("message", "Admin already exists!");
-            return "Admin-register"; // Show error message
+            return "Admin-register";
         }
         
-        model.addAttribute("success", "Admin registered successfully! You can now login.");
-        return "Admin-login"; // Redirect to login page
+        model.addAttribute("success", "Admin registered successfully!");
+        return "Admin-login";
     }
 
     @GetMapping("/register")
@@ -87,40 +88,32 @@ public class AdminController {
             return "redirect:/admin/login";
         }
 
-        List<Users> members = adminService.getAllMembers();
-        List<Plan> plans = planService.getAllPlans();
-        
-        model.addAttribute("members", members);
-        model.addAttribute("plans", plans);
+        model.addAttribute("members", adminService.getAllMembers());
+        model.addAttribute("plans", planService.getAllPlans());
         
         return "Admin-members";
     }
 
-    // ** Add Member **
     @PostMapping("/addMember")
     public String addMember(@RequestParam String name, @RequestParam String email,
                             @RequestParam String password, @RequestParam String phone,
-                            @RequestParam String plan, Model model) {
-        Users user = new Users(name, email, password, phone, plan);
-        adminService.addMember(user);
+                            @RequestParam String plan) {
+        adminService.addMember(new Users(name, email, password, phone, plan));
         return "redirect:/admin/members";
     }
 
-    // ** Delete Member **
     @PostMapping("/deleteMember")
     public String deleteMember(@RequestParam int id) {
         adminService.deleteMember(id);
         return "redirect:/admin/members";
     }
 
-    // ** Block Member **
     @PostMapping("/blockMember")
     public String blockMember(@RequestParam int id) {
         adminService.blockMember(id);
         return "redirect:/admin/members";
     }
 
-    // ** Unblock Member **
     @PostMapping("/activateMember")
     public String activateMember(@RequestParam int id) {
         adminService.activateMember(id);

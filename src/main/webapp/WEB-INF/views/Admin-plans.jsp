@@ -8,40 +8,74 @@
 <head>
     <title>Manage Plans</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+       body {
+            background: url('https://cdn.prod.website-files.com/65496b1500aed8ad52a5a193/6705610423f0878ea8f4da84_Small%20private%20gym%20studio.webp') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .form-control {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h2 class="mt-4">Manage Plans</h2>
-    
-    <form action="addPlan" method="post" class="mb-3">
-        <input type="text" name="name" placeholder="Plan Name" required>
-        <input type="number" step="0.01" name="price" placeholder="Price" required>
-        <select name="duration" required>
-            <option value="Monthly">Monthly</option>
-            <option value="Quarterly">Quarterly</option>
-            <option value="Yearly">Yearly</option>
-        </select>
-        <button type="submit" class="btn btn-success">Add Plan</button>
-    </form>
+    <h2 class="mt-4 text-center">Manage Plans</h2>
 
-    <table class="table">
-        <thead>
+    <!-- Add Plan Form -->
+    <div class="card p-4 mt-3">
+        <h4 class="card-title text-center">Add New Plan</h4>
+        <form action="addPlan" method="post" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="name" class="form-control" placeholder="Plan Name" required>
+            </div>
+            <div class="col-md-4">
+                <input type="number" step="0.01" name="price" class="form-control" placeholder="Price" required>
+            </div>
+            <div class="col-md-4">
+                <select name="duration" class="form-control" required>
+                    <option value="Monthly">Monthly</option>
+                    <option value="Quarterly">Quarterly</option>
+                    <option value="Yearly">Yearly</option>
+                </select>
+            </div>
+            <div class="col-12 text-center">
+                <button type="submit" class="btn btn-success">Add Plan</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Plans Table -->
+    <table class="table table-bordered table-striped mt-4">
+        <thead class="table-dark">
             <tr>
-                <th>Name</th><th>Price</th><th>Duration</th><th>Actions</th>
+                <th>Name</th><th>Price (₹)</th><th>Duration</th><th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            <% for (Plan plan : plans) { %>
+            <% if (plans != null && !plans.isEmpty()) { %>
+                <% for (Plan plan : plans) { %>
+                    <tr>
+                        <td><%= plan.getName() %></td>
+                        <td><%= plan.getPrice() %></td>
+                        <td><%= plan.getDuration() %></td>
+                        <td>
+                            <form action="deletePlan" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="<%= plan.getId() %>">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% } %>
+            <% } else { %>
                 <tr>
-                    <td><%= plan.getName() %></td>
-                    <td><%= plan.getPrice() %></td>
-                    <td><%= plan.getDuration() %></td>
-                    <td>
-                        <form action="deletePlan" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="<%= plan.getId() %>">
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                    </td>
+                    <td colspan="4" class="text-center">No plans available.</td>
                 </tr>
             <% } %>
         </tbody>

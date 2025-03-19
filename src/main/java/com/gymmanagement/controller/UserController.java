@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.gymmanagement.entity.Users;
 import com.gymmanagement.service.UserService;
+import com.gymmanagement.service.PlanService;
 
 @Controller
 @RequestMapping("/user")
@@ -18,6 +19,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PlanService planService;
 
     @GetMapping("/register")
     public String showRegistrationForm() {
@@ -38,11 +42,9 @@ public class UserController {
             return "User-register";
         }
 
-        Users user = new Users(name, email, password, phone, plan);
-        userService.registerUser(user);
-        
+        userService.registerUser(new Users(name, email, password, phone, plan));
         model.addAttribute("message", "Registration successful!");
-        return "User-login"; // Redirect to login page after registration
+        return "User-login";
     }
 
     @GetMapping("/login")
@@ -60,12 +62,12 @@ public class UserController {
         Users user = userService.authenticateUser(email, password);
         
         if (user != null) {
-            session.setAttribute("loggedInUser", user); // Store user in session
-            return "redirect:/user/dashboard"; // Redirect to dashboard after login
-        } else {
-            model.addAttribute("message", "Invalid email or password!");
-            return "User-login"; // Stay on login page with error message
+            session.setAttribute("loggedInUser", user);
+            return "redirect:/user/dashboard";
         }
+
+        model.addAttribute("message", "Invalid email or password!");
+        return "User-login";
     }
 
     @GetMapping("/dashboard")
@@ -73,16 +75,16 @@ public class UserController {
         Users user = (Users) session.getAttribute("loggedInUser");
         
         if (user == null) {
-            return "redirect:/user/login"; // Redirect if not logged in
+            return "redirect:/user/login";
         }
-        
+
         model.addAttribute("user", user);
-        return "User-dashboard"; // Show the dashboard
+        return "User-dashboard";
     }
 
     @GetMapping("/logout")
     public String logoutUser(HttpSession session) {
-        session.invalidate(); // Destroy session
-        return "redirect:/user/login?logout=true"; // Redirect to login page
+        session.invalidate();
+        return "redirect:/user/login?logout=true";
     }
 }

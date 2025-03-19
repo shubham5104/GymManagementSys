@@ -2,81 +2,87 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login - Gym Management</title>
+    <title>User Login - Gym Management</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
-            background: linear-gradient(to right, #56ccf2, #2f80ed);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background: url('https://cdn.prod.website-files.com/65496b1500aed8ad52a5a193/6705610423f0878ea8f4da84_Small%20private%20gym%20studio.webp') no-repeat center center fixed;
+            background-size: cover;
         }
         .login-container {
-            width: 380px;
-            background: white;
-            padding: 30px;
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            animation: fadeIn 1s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
         }
         .login-container h2 {
-            color: #2f80ed;
-            font-weight: bold;
             margin-bottom: 20px;
+            text-align: center;
         }
-        .login-container input {
-            border-radius: 5px;
-        }
-        .login-container .btn-primary {
-            background: #2f80ed;
+        .form-control {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
             border: none;
-            transition: 0.3s;
         }
-        .login-container .btn-primary:hover {
-            background: #1c6fd4;
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
         }
-        .login-container a {
+        .btn-custom {
+            background-color: #ffcc00;
+            color: black;
+            font-weight: bold;
+        }
+        .btn-custom:hover {
+            background-color: #e6b800;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .register-link a {
+            color: #ffcc00;
+            font-weight: bold;
             text-decoration: none;
-            color: #2f80ed;
         }
-        .login-container a:hover {
+        .register-link a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <div class="login-container">
+            <h2>User Login</h2>
 
-    <div class="login-container">
-        <h2>Login</h2>
+            <% if (request.getParameter("logout") != null) { %>
+                <p class="alert alert-success text-center">Logged out successfully!</p>
+            <% } %>
 
-        <% if (request.getParameter("logout") != null) { %>
-            <p class="alert alert-success">Logged out successfully!</p>
-        <% } %>
+            <% if (request.getAttribute("message") != null) { %>
+                <p class="alert alert-danger text-center"><%= request.getAttribute("message") %></p>
+            <% } %>
 
-        <% if (request.getAttribute("message") != null) { %>
-            <p class="alert alert-danger"><%= request.getAttribute("message") %></p>
-        <% } %>
+            <form action="login" method="post">
+                <div class="mb-3">
+                    <label>Email:</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>Password:</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-custom w-100">Login</button>
+            </form>
 
-        <form action="login" method="post">
-            <div class="mb-3">
-                <input type="email" name="email" class="form-control" placeholder="Enter Email" required>
-            </div>
-            <div class="mb-3">
-                <input type="password" name="password" class="form-control" placeholder="Enter Password" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-        </form>
-
-        <p class="mt-3">
-            <a href="register">Don't have an account? Register</a>
-        </p>
+            <!-- Registration Link -->
+            <p class="register-link mt-3">
+                Don't have an account? <a href="register">Register Here</a>
+            </p>
+        </div>
     </div>
-
 </body>
 </html>
